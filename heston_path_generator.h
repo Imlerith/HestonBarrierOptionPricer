@@ -10,14 +10,16 @@
 
 #pragma once
 
+#include <iostream>
 #include <cmath>
+#include <ctime>
 #include <vector>
 #include <random>
 #include "option.h"
 
 class HestonPathGenerator {
 private:
-	const unique_ptr<BarrierOption> &boption;
+	const unique_ptr<Option> &boption;
 	double kappa; // mean reversion rate
 	double theta; // long-run vola
 	double v_0; // initial vola
@@ -28,11 +30,13 @@ private:
 	vector<double> spot_draws; // standard normal (correlated) draws for spot
 
 public:
-	HestonPathGenerator(const unique_ptr<BarrierOption> &boption_,
+	HestonPathGenerator(const unique_ptr<Option> &boption_,
 			double kappa_, double theta_, double v_0_, double sigma_,
 			double rho_, unsigned n_steps_);
 	virtual ~HestonPathGenerator() {
 	}
+
+	vector<double> get_spot_draws() const;
 
 	void calc_spot_path(vector<double> &spot_path);
 

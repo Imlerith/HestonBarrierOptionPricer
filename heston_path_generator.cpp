@@ -7,14 +7,18 @@
 
 #include "heston_path_generator.h"
 
-HestonPathGenerator::HestonPathGenerator(
-		const unique_ptr<BarrierOption> &boption_, double kappa_, double theta_,
-		double v_0_, double sigma_, double rho_, unsigned int n_steps_) :
+HestonPathGenerator::HestonPathGenerator(const unique_ptr<Option> &boption_,
+		double kappa_, double theta_, double v_0_, double sigma_, double rho_,
+		unsigned int n_steps_) :
 		boption(boption_), kappa(kappa_), theta(theta_), v_0(v_0_), sigma(
-				sigma_), rho(rho_), n_steps(n_steps_) {
-	std::vector<double> vol_draws(n_steps, 0.0);
-	std::vector<double> spot_draws(n_steps, 0.0);
+				sigma_), rho(rho_), n_steps(n_steps_), vol_draws(
+				vector<double>(n_steps, 0.0)), spot_draws(
+				vector<double>(n_steps, 0.0)) {
 	generate_correlated_std_normal_draws(vol_draws, spot_draws);
+}
+
+vector<double> HestonPathGenerator::get_spot_draws() const {
+	return spot_draws;
 }
 
 void HestonPathGenerator::generate_correlated_std_normal_draws(
@@ -29,7 +33,7 @@ void HestonPathGenerator::generate_correlated_std_normal_draws(
 	std::vector<double>::iterator i2;
 
 	for (i1 = std_normals_1.begin(), i2 = std_normals_2.begin();
-			i1 < std_normals_1.end() && i1 < std_normals_2.end(); ++i1, ++i2) {
+			i1 < std_normals_1.end() && i2 < std_normals_2.end(); ++i1, ++i2) {
 		double x = dist(gen);
 		double y = rho * x + sqrt(1 - pow(2, rho)) * dist(gen);
 		*i1 = x;
